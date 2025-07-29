@@ -1,0 +1,108 @@
+---
+title: Calculator App
+description: Proyek kalkulator yang dibangun menggunakan algoritma postfix. lengkap dengan penjelasan bagaimana algoritma ini bekerja dan bagaimana proses evaluasinya dilakukan
+date: 2025-07-22
+icon: solar:calculator-minimalistic-outline
+category: project
+tags:
+- calculator
+- easy
+- vue
+- nuxt
+---
+
+Hello Worlds, ini projek pertama gua yang mengisi portofolio sekaligus menjadi landasan berpikir dalam menterjemahkan bahasa manusia ke bahasa pemrograman, yaitu javascript.
+
+Mungkin projek kalkulator begitu remeh bagi kebanyakan orang, karena fungsi dari kalkulator ini hanyalah untuk menghitung operasi bilangan (ekspresi) dengan operator sederhana saja, seperti Kali, Bagi, Tambah, Kurang (KaBaTaKur), tapi pada awalnya gua juga berpikir demikian.
+
+Permasalahannya adalah didalam dunia komputasi, komputer tidak mampu menghitung tipe data string dengan benar dan terurut pada ekspresi yang sudah kita tuliskan, misal operator Kali dan Bagi harus dihitung terlebih dahulu, lalu ekspresi yang berada di dalam tanda kurung menjadi prioritas yang lebih utama, disinilah peran komputasi dan alogaritma, yaitu memberikan perintah komputer untuk menghitung ekspresi yang memang menjadi prioritas utama.
+
+## Mengenal Operator Prioritas
+
+Sedari gua duduk dibangku Sekolah Dasar, Perkalian dan Pembagian akan menjadi prioritas Pertama, setelah Penjumlahan dan Pengurangan, maka dari itu gua bakal memberi nilai pada Perkalian dan Pembagian, yaitu 2 (dua) dan nilai 1 (satu) kepada penjumlahan dan Pengurangan, sehingga gua akan menyimpan variable prioritas dengan nilai sebagai berikut:
+
+```js [file.js]
+const prioritas = {
+     '*' : 2, // perkalian
+     '/' : 2, // pembagian
+     '+' : 1, // penjumlahan
+     '-' : 1, // pengurangan
+}
+```
+
+## Apa itu Postfix ?
+
+Postfix adalah format penulisan ekspresi matematika di mana operator (seperti +, −, ×, ÷) ditulis setelah operand. Berbeda dengan format infix yang biasa kita gunakan (Infix: 3 + 4), postfix menuliskannya menjadi (Posfix: 3 4 +).
+
+Postfix menghilangkan kebutuhan tanda kurung karena urutan evaluasi ditentukan oleh posisi operand dan operator, sehingga lebih mudah diproses oleh mesin atau algoritma.
+
+Contoh:
+| Penamaan | Operasi       |
+| -------- | -------       |
+| infix    | 1 + 2 * 3     |
+| Postfix  | 3 2 * 1 +     |
+| Hasil    | 7             |
+
+## Bagaimana Postfix Bekerja ?
+
+Postfix bekerja dengan menggunakan struktur data stack (tumpukan). Ketika sebuah ekspresi postfix dievaluasi:
+1. Setiap operand (angka) dimasukkan ke dalam stack.
+2. Ketika ditemukan operator, dua operand terakhir diambil dari stack untuk dihitung.
+3. Hasil perhitungan dikembalikan ke dalam stack.
+4. Proses berulang sampai akhir ekspresi.
+5. Nilai akhir dalam stack adalah hasil evaluasi.
+
+Dengan cara ini, tidak diperlukan tanda kurung atau prioritas operator seperti dalam infix. 
+
+Ekspresi: 5 4 3 * + 2 1 + -
+
+| que | perintah | stack    |
+| --- | -------- | -----    |
+| 5   | push     | 5        |
+| 4   | push     | 5, 4     |
+| 3   | push     | 5, 4, 3  |
+| *   | 4 * 3    | 5, 12    |
+| +   | 5 + 12   | 17       |
+| 2   | push     | 17, 2    |
+| 1   | push     | 17, 2, 1 |
+| +   | 2 + 1    | 17, 3    |
+| -   | 17 - 3   | 14       |
+| =   | Hasil    | 14       |
+
+
+## Bagaimana Cara Merubah Infix Menjadi Postfix?
+
+saya akan melakukan perubahan ekspresi matematika : 5 + 4 * 3 - ( 2 + 1 ), yang artinya mendahulukan 2 + 1, lalu 4 * 3:
+1. siapkan array kosong untuk menampung operator (operators).
+2. siapkan array kosong untuk menumpuk ulang ekspresi (outputs).
+3. jika token (ekspresi) tersedia maka lakukan logika pengulangan:
+   - jika karakter adalah bertipe number pake push ke outputs.
+   - jika karakter adalah operator maka:
+     1. ketika operators tidak kosong dan karakter saat ini adalah operator dan operators terakhir lebih besar dari operator saat ini, maka pop operators dan push ke outputs.
+     2. lalu push karakter ke operators.
+   - jika karakter adalah operator `(` maka push ke operators.
+   - jika karakter adalah operator `)` maka:
+     1. ketika operators tidak kosong dan operators terakhir bukan `(`, maka pop operators dan push ke outputs.
+     2. lalu pop operators.
+   - jika masih ada operators yang tersisa, pop semua operators dan push ke outputs
+
+| que | operators | outputs           |
+| --- | --------- | -------           |
+| 5   |           | 5                 |
+| +   | +         | 5                 |
+| 4   | +         | 5 4               |
+| *   | + *       | 5 4               |
+| 3   | + *       | 5 4 3             |
+| -   | + -       | 5 4 3 *           |
+| `(` | - `(`     | 5 4 3 * +         |
+| 2   | - `(`     | 5 4 3 * + 2       |
+| +   | - `(` +   | 5 4 3 * + 2       |
+| 1   | - `(` +   | 5 4 3 * + 2 1     |
+| `)` | -         | 5 4 3 * + 2 1 +   |
+|     | Akhir     | 5 4 3 * + 2 1 + - |
+
+## Berikut adalah Program Calculator yang Sudah dibuat dengan Algoritma Postfix
+
+silahkan masukan operasi matematika pada kolom operasi infix, kamu bisa masukan operator (+) untuk penjumlahan, (-) untuk pengurangan, (*) untuk perkalian, (/) untuk pembagian, dan (.) sebagai koma atau desimal.
+
+<ProjectCalculator/>
