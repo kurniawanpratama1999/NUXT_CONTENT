@@ -1,16 +1,20 @@
 <script setup>
     import me from '@/assets/image/me_with_hat_cartoon_version.jpeg'
 
-    
+    useSeoMeta({
+      title: "Browan Coding",
+      description: "Isinya cuma project dan dokumentasi dari Kurniawan Pratama"
+    })
+
     definePageMeta({
       layout: 'default'
     })
     
     const {data : projects} = await useAsyncData(() => 
-    queryCollection('content')
-    .where("category", "=", "project").all()
-  )
-  
+      queryCollection('content')
+      .where("category", "=", "project").all()
+    )
+    
     const arr = projects.value
     
     const icons = [
