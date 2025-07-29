@@ -5,8 +5,8 @@
 </script>
 
 <template>
-	<div id="project" class="bg-slate-300 min-h-[100vh] grid grid-cols-[3fr_1fr] grid-rows-[auto_1fr] gap-5 p-5">
-		<Navbar class="col-start-1 col-end-3"/>
+	<div id="project" class="bg-slate-300 min-h-[100vh] grid md:grid-cols-[3fr_1fr] grid-cols-1 grid-rows-[auto_1fr] gap-5 p-5">
+		<Navbar class="md:col-start-1 md:col-end-3"/>
 		<main class="bg-slate-200 rounded-xl p-5 border-t-2 border-red-500">
 			<slot/>
 		</main>

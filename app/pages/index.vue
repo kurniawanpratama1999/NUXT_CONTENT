@@ -47,7 +47,7 @@
 </script>
 
 <template>
-  <section id="hero" class="row-start-1 row-end-3 bg-slate-200 p-5 rounded-xl space-y-5 border-t-2 border-blue-700">
+  <section id="hero" class="md:row-start-1 md:row-end-3 bg-slate-200 p-5 rounded-xl space-y-5 border-t-2 border-blue-700">
     <div id="image-me" class="border border-slate-500 size-40 rounded-full mx-auto overflow-hidden">
       <img :src="me" alt="Kurniawan Pratama">
     </div>
@@ -75,7 +75,7 @@
       <h2 class="text-2xl font-bold row-start-1 row-end-2">Pengembangan Program Penyalur Hobi</h2>
       <p class="row-start-2 row-end-3">"Tentu aja kalian semua bisa mencoba projeknya di akhir, harapan gua sih berjalan dengan mulus dan tidak ada error ketika digunakan, kalo kalian menemukan bug, DM aja di Sosial Media Instagram yang terletak di Navbar"</p>
     </div>
-    <ul class="grid grid-cols-3 gap-5">
+    <ul class="grid md:grid-cols-3 grid-cols-2 gap-5">
         <li v-for="item in arr.filter((i, j) => j < 12)" :key="item.id">
           <div class="grid grid-cols-[auto_1fr] items-center gap-x-2">
             <div class="row-span-2 col-start-1 col-end-2">
