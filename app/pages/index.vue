@@ -68,14 +68,14 @@
   </section>
   
   <section id="projects" class="bg-slate-200 p-5 border-t-2 border-red-700 rounded-xl space-y-5">
-    <div class="wrapper border-b border-slate-500 pb-4 grid grid-cols-[auto-1fr] gap-x-5 items-center">
-      <div id="projects-image" class="size-40 rounded-full row-start-1 row-end-3 col-start-1 col-end-2 flex items-center justify-center">
-        <Icon name="solar:code-linear" size="10rem" class="border block"/>
+    <div class="wrapper border-b border-slate-500 pb-4 grid lg:grid-cols-[auto_1fr] grid-cols-1 gap-x-5 items-center">
+      <div id="projects-image" class="size-40 lg:row-start-1 lg:row-end-3 lg:col-start-1 lg:col-end-2 flex items-center justify-center mx-auto">
+        <Icon name="solar:code-linear" size="10rem"/>
       </div>
-      <h2 class="text-2xl font-bold row-start-1 row-end-2">Pengembangan Program Penyalur Hobi</h2>
-      <p class="row-start-2 row-end-3">"Tentu aja kalian semua bisa mencoba projeknya di akhir, harapan gua sih berjalan dengan mulus dan tidak ada error ketika digunakan, kalo kalian menemukan bug, DM aja di Sosial Media Instagram yang terletak di Navbar"</p>
+      <h2 class="text-2xl font-bold lg:row-start-1 lg:row-end-2 text-center lg:text-left">Pengembangan Program Penyalur Hobi</h2>
+      <p class="lg:row-start-2 lg:row-end-3 text-center lg:text-left">"Tentu aja kalian semua bisa mencoba projeknya di akhir, harapan gua sih berjalan dengan mulus dan tidak ada error ketika digunakan, kalo kalian menemukan bug, DM aja di Sosial Media Instagram yang terletak di Navbar"</p>
     </div>
-    <ul class="grid md:grid-cols-3 grid-cols-2 gap-5">
+    <ul class="grid xl:grid-cols-3 grid-cols-2 gap-5">
         <li v-for="item in arr.filter((i, j) => j < 12)" :key="item.id">
           <div class="grid grid-cols-[auto_1fr] items-center gap-x-2">
             <div class="row-span-2 col-start-1 col-end-2">
