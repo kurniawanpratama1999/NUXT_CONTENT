@@ -9,7 +9,7 @@ export default defineContentConfig({
         tags: z.array(z.string()),
         category: z.string(),
         date: z.date(),
-        icon: z.string()
+        icon: z.string(),
       })
     }),
   }

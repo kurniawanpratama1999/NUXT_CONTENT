@@ -64,6 +64,9 @@
         todo.delete({id})
     }
 
+    const taskTotal = computed(() => todos.value.length)
+    const taskDone = computed(() => todos.value.filter(item => item.done).length)
+    const taskUndone = computed(() => todos.value.filter(item => !item.done).length)
 
 </script>
 
@@ -71,9 +74,9 @@
     <form @submit.prevent="() => handleNewOrUpdateTask()" class="w-[300px] mx-auto rounded-2xl p-5 space-y-2 bg-[rgba(255,255,255,.3)]">
         <h3 class="text-center">TODO APP V1</h3>
         <div id="information" class="flex gap-2 [&_div]:basis-full [&_div]:aspect-square [&_div]:border-1 [&_div]:rounded-xl">
-            <div id="totalOfTask" class="flex items-center justify-center font-mono border-blue-500 text-blue-800 bg-blue-200">10</div>
-            <div id="totalDone" class="flex items-center justify-center font-mono border-green-500 text-green-800 bg-green-200">5</div>
-            <div id="totalNot" class="flex items-center justify-center font-mono border-red-500 text-red-800 bg-red-200">5</div>
+            <div id="totalOfTask" class="flex items-center justify-center font-mono border-blue-500 text-blue-800 bg-blue-200">{{ taskTotal }}</div>
+            <div id="totalDone" class="flex items-center justify-center font-mono border-green-500 text-green-800 bg-green-200">{{ taskUndone }}</div>
+            <div id="totalNot" class="flex items-center justify-center font-mono border-red-500 text-red-800 bg-red-200">{{ taskDone }}</div>
         </div>
         <div id="filter">
             <select v-model="record.filter" name="filter-task" id="filter-task" class="w-full p-1 border-1 border-slate-500 rounded-xl text-center">

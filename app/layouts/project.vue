@@ -1,8 +1,3 @@
-<script setup>
-	const {data: projects} = await useAsyncData(() => 
-	queryCollection('content').where("category", '=', 'project').all())
-</script>
-
 <template lang="html">
 	<div id="project" :class="[
 		'text-sm p-2',
@@ -11,6 +6,6 @@
 		'grid grid-cols-1 grid-rows-[auto_1fr] gap-2',
 		]">
 		<Navbar/>
-		<slot/>
+		<slot />
 	</div>
 </template>

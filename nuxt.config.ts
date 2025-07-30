@@ -5,11 +5,6 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxt/icon', '@nuxt/content'],
-  app: {
-    head: {
-      link: [{rel: "icon", type: "image/x-icon", href: 'me.ico'}]
-    }
-  },
   icon: {
     mode: 'css',
     cssLayer: "base",

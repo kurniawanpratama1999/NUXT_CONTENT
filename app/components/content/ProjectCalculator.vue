@@ -140,12 +140,10 @@
 
         return stack[0]
     })
-
-
 </script>
 <template>
-    <section id='project'>
-        <table>
+    <section id='project' class="w-fit mx-auto">
+        <table class="w-fit">
             <thead>
                 <tr>
                     <th>Jenis</th>
@@ -169,3 +167,10 @@
         </table>
     </section>
 </template>
+
+<style scoped>
+    td, th {
+        border: 1px solid black;
+        padding: 10px;
+    }
+</style>
