@@ -3,46 +3,62 @@
         layout: 'project',
     })
 
-    
     const path = useRoute().path
-    const {data : project} = await useAsyncData(path, () => 
-        queryCollection('content').path(path).first()
-    )
 
+    const {data: project} = await useAsyncData(path, () => 
+        queryCollection('content').path(path).first())
+
+    const ProjectTOC = project.value.body.toc.links
+        
+    const {data: projects} = await useAsyncData(() => 
+        queryCollection('content').where('category','=','project').all())
+        
     useSeoMeta(project.value.seo)
+</script>   
 
-    const toc = project.value.body.toc.links
-</script>
-
-<template>
-    <section id="information" class="border-b border-slate-500 pb-2 mb-2">
-        <ul class="flex justify-between text-slate-600">
-            <li>
-                <span>Penulis : </span>
-                <span>Kurniawan Pratama</span>
-            </li>
-            <li>
-                <span>Dibuat : </span>
-                <span>{{ new Intl.DateTimeFormat("id-ID", {dateStyle: "long"}).format(new Date(project.date)) }}</span>
-            </li>
-        </ul>
-    </section>
-    <article id="article-content">
-        <h1 id="title" class="text-3xl font-bold capitalize">{{ project.title }}</h1>
-        <p id="short-description" class="text-justify mb-5">{{ project.description }}</p>
-        <section id="toc" class="p-5 mx-10 rounded-xl bg-indigo-200 mb-5">
-            <h2 class="text-xl font-semibold">Daftar Isi :</h2>
-            <ul id="toc-list" class="list-decimal pl-8">
-                <li v-for="(item, key) in toc" :key>
-                    <a :href="`#${item.id}`">{{ item.text }}</a>
+<template lang="html">
+    <main class="space-y-2">
+        <section id="information" class="text-xs font-bold italic text-slate-600 bg-[rgba(255,255,255,.4)] p-2 rounded-lg">
+            <ul class="text-left space-y-1">
+                <li>
+                    <span>Author: </span>
+                    <span>Kurniawan Pratama</span>
                 </li>
-            </ul>    
+                <li>
+                    <span>Dibuat: </span>
+                    <span>{{ new Intl.DateTimeFormat("id-ID", {dateStyle: "long"}).format(new Date(project.date)) }}</span>
+                </li>
+            </ul>
         </section>
-        <section class="main-content [&_p]:text-justify [&_p]:mb-5 [&_ul]:mb-5 [&_ol]:mb-5">
-            <ContentRenderer v-if="project" :value="project"/>
-            <p v-else>{{ path }} not found</p>
+        <article id="article-content" class="space-y-2">
+            <div class="bg-[rgba(255,255,255,.4)] p-2 rounded-lg">
+                <h1 id="title" class="text-xl font-bold text-emerald-800">{{ project.title }}</h1>
+                <p id="short-description" class="">{{ project.description }}</p>
+            </div>
+            <section id="toc" class="bg-[rgba(255,255,255,.4)] p-2 rounded-lg">
+                <h2 class="font-bold text-lg text-blue-800">Daftar Isi :</h2>
+                <ol id="toc-list" class="list-decimal pl-8">
+                    <li v-for="(item, key) in ProjectTOC" :key>
+                        <a :href="`#${item.id}`">{{ item.text }}</a>
+                    </li>
+                </ol>    
+            </section>
+            <section :class="['main-content','bg-[rgba(255,255,255,.4)] p-2 rounded-lg', 'pb-5']">
+                <ContentRenderer v-if="project" :value="project"/>
+                <p v-else>{{ path }} not found</p>
+            </section>
+        </article>
+    </main>
+    <aside id="widget">
+        <section class="bg-[rgba(255,255,255,.4)] p-2 rounded-lg">
+            <h2 class="font-bold text-lg">Check The List</h2>
+            <ul class="list-disc pl-6">
+                <li v-for="(item, key) in projects.filter(item => item.path !== path)" :key>
+                    <NuxtLink :to="item.path">{{ item.title }}</NuxtLink>
+                </li>
+            </ul>
         </section>
-    </article>
+    </aside>
 </template>
 
 <style>
@@ -53,8 +69,16 @@
     .main-content h6, 
     .main-content h1 {
         font-weight: bold;
-        font-size: 20px;
+        font-size: 16px;
+        color: rgb(0, 15, 97)
     }
+
+    .main-content p,
+    .main-content table,
+    .main-content ul,
+    .main-content ol {
+        margin-bottom: 16px;
+    } 
 
     .main-content ol {
         padding-left: 40px;

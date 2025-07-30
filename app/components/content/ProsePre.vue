@@ -1,5 +1,5 @@
-<template>
-  <div class="bg-slate-900 rounded-xl p-2 mx-10 mb-5">
+<template lang="html">
+  <div class="bg-slate-900 rounded-xl p-2 mb-5 text-xs">
     <div
         v-if="$props.filename"
         class="text-slate-300"
@@ -9,7 +9,7 @@
     <pre
     :class="{
     [$props.class]: true,
-    'px-5 py-2':$props.filename,
+    'px-5 py-2 overflow-x-auto':$props.filename,
     }" ref="pre">
         <slot />
     </pre>
@@ -40,4 +40,5 @@ onMounted(() => {
 pre code .line {
   display: block;
 }
+
 </style>

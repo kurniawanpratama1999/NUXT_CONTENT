@@ -1,7 +1,12 @@
 <template>
-	<div id="default" class="bg-slate-300 min-h-[100vh] grid grid-cols-1 grid-rows-[auto_1fr] gap-5 p-5">
+	<div id="default" :class="[
+		'text-sm p-2',
+		'min-h-dvh',
+		'bg-gradient-to-r from-emerald-300 to-indigo-300',
+		'grid grid-cols-1 grid-rows-[auto_1fr] gap-2',
+		]">
 		<Navbar/>
-		<main class="grid md:grid-cols-[1fr_2fr] grid-cols-1 md:grid-rows-[2fr_1fr] gap-5">
+		<main id="main" class="min-h-full grid auto-rows-auto gap-2">
 			<slot/>
 		</main>
 	</div>

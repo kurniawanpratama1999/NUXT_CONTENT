@@ -68,7 +68,7 @@
 </script>
 
 <template>
-    <form @submit.prevent="() => handleNewOrUpdateTask()" class="border border-slate-500 w-[300px] mx-auto rounded-2xl p-5 space-y-2">
+    <form @submit.prevent="() => handleNewOrUpdateTask()" class="w-[300px] mx-auto rounded-2xl p-5 space-y-2 bg-[rgba(255,255,255,.3)]">
         <h3 class="text-center">TODO APP V1</h3>
         <div id="information" class="flex gap-2 [&_div]:basis-full [&_div]:aspect-square [&_div]:border-1 [&_div]:rounded-xl">
             <div id="totalOfTask" class="flex items-center justify-center font-mono border-blue-500 text-blue-800 bg-blue-200">10</div>
