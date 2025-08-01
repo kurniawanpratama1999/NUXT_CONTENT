@@ -28,6 +28,7 @@ import ExpenseControl from '~/utils/Class/Expensecontrol';
             model.desc = desc
             model.nominal = nominal
             model.out = out
+            displayRupiah.value = ""
     }
 
     const filter = reactive({
@@ -39,6 +40,7 @@ import ExpenseControl from '~/utils/Class/Expensecontrol';
 
     const isOpen = ref(false)
     const isUpdate = ref(false)
+    const displayRupiah = ref("")
 
     const control = new ExpenseControl();
 
@@ -158,7 +160,46 @@ import ExpenseControl from '~/utils/Class/Expensecontrol';
         isOpen.value = false
         handleCloseForm()
     }
+    
+    const handleDelete = ({id}) => {
+        control.delete({id})
+        isOpen.value = false
+        handleCloseForm()
+    }
 
+    function formatRupiah(value) {
+        const formatter = new Intl.NumberFormat('id-ID');
+        const abs = Math.abs(value);
+        const formatted = formatter.format(abs);
+        return value < 0 ? `-Rp ${formatted}` : `Rp ${formatted}`;
+    }
+
+    // Parse string input ke number
+    function parseRupiah(str) {
+        const clean = str.replace(/[^0-9-]/g, ''); // Hapus semua kecuali angka dan minus
+        return parseInt(clean || '0');
+    }
+
+    // Tangani input format
+    function onInput(e) {
+        const num = parseRupiah(e.target.value);
+        model.nominal = num;
+        displayRupiah.value = formatRupiah(num);
+    }
+
+    // Tangani key yang diperbolehkan
+    function onKeyDown(e) {
+        const allowed = '0123456789-';
+        const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+        if (
+            allowed.includes(e.key) ||
+            allowedKeys.includes(e.key) ||
+            (e.ctrlKey && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase()))
+        ) {
+            return;
+        }
+        e.preventDefault();
+    }
     
 </script>
 
@@ -167,17 +208,18 @@ import ExpenseControl from '~/utils/Class/Expensecontrol';
         <form v-if="isOpen" class="absolute top-0 left-0 right-0 bottom-0 bg-[rgba(255,255,255,.1)] backdrop-blur p-2 flex items-center justify-center">
             <div class="bg-slate-100 rounded-lg">
                 <p class="id">ID-{{ model.id.toString().padStart(4, "0") }}</p>
+                <button id="delete" type="button" v-if="isUpdate" @click="handleDelete({id: model.id})" class="bg-red-400">delete</button>
                 <label for="date">
                     <span>Date :</span>
                     <input type="date" name="date" id="date" v-model="model.date">
                 </label>
                 <label for="desc">
                     <span>Description :</span>
-                    <input type="text" name="desc" id="desc" placeholder="description" v-model="model.desc">
+                    <input type="text" name="desc" id="desc" placeholder="description" v-model="model.desc" required>
                 </label>
                 <label for="nominal">
                     <span>Nominal :</span>
-                    <input type="text" name="nominal" id="nominal" placeholder="0,00" class="text-right" v-model="model.nominal">
+                    <input type="text" name="nominal" id="nominal" placeholder="Rp 0,00" class="text-right" v-model="displayRupiah" @input="onInput" @keydown="onKeyDown" required>
                 </label>
                 <div id="type">
                     <span>Transaction Type :</span>
@@ -209,7 +251,7 @@ import ExpenseControl from '~/utils/Class/Expensecontrol';
             <option value="za">{{ ["date", "nominal"].includes(filter.primary) ? "9 ~ 0" : "Z ~ A" }}</option>
         </select>
 
-        <ul id="list">
+        <ul id="list" class="overflow-y-auto max-h-[300px]">
             <li v-for="item in record.datas" :key="item.id">
                 <button type="button" @click="handleOpenUpdateForm({getID: item.id})" :class="[item.out ? 'bg-red-300':'bg-emerald-300']">
                 <p :class="['id', 'text-xs text-slate-700']">ID-{{ item.id.toString().padStart(4, "0") }}</p>
@@ -307,7 +349,7 @@ import ExpenseControl from '~/utils/Class/Expensecontrol';
     #expense-tracker form div {
         display: grid;
         grid-template-areas: 
-        'idid idid'
+        'idid dele'
         'date date'
         'desc desc'
         'nomi nomi'
@@ -317,8 +359,16 @@ import ExpenseControl from '~/utils/Class/Expensecontrol';
         padding: 10px;
     }
 
-    #expense-tracker form div .id{
+    #expense-tracker form div .id {
         grid-area: idid;
+        justify-self: start;
+    }
+    #expense-tracker form div #delete{
+        grid-area: dele;
+        justify-self: end;
+        padding: 5px 20px;
+        border-radius: 1rem;
+        border: 1px solid;
     }
     #expense-tracker form div label[for=date]{
         grid-area: date;

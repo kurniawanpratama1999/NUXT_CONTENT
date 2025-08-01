@@ -13,7 +13,6 @@ export default class ExpenseControl {
 
         date = this.#serialize({date})
 
-        console.log('control create => ', date);
         const model = new ExpenseModel({id, date, desc, nominal, out})
         this.#transactions.value.push(model)
         return true
@@ -37,7 +36,6 @@ export default class ExpenseControl {
         }
         
         date = this.#serialize({date})
-        console.log('control update => ', date)
 
         if (date !== undefined) (findID.date = date);
         if (desc !== undefined) (findID.desc = desc);
@@ -49,8 +47,7 @@ export default class ExpenseControl {
 
     delete({id}){
         this.#transactions.value = this.#transactions.value
-                                    .map(trx => trx.state)
-                                    .filter(trx => trx.id !== id);
+                                    .filter(trx => trx.state.id !== id);
     }
 
     #serialize({date}){
