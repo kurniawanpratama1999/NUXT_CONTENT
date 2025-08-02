@@ -19,7 +19,12 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css'],
   vite:{
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        'jspdf': 'jspdf/dist/jspdf.es.js'
+      }
+    }
   },
   content: {
     renderer: {
