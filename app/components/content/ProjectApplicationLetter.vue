@@ -1,154 +1,87 @@
 <script setup>
-import {jsPDF} from 'jspdf';
+import { TiptapTextAlign } from '~/composables/tiptapExt';
 
-    const tanggalSurat = reactive({
-        text: "Jakarta, 02 Agustus 2025",
-        align: "center",
-    })
 
-    const informasiPenerima = reactive({
-        text: "yth.\nBapak/Ibu Rekruter\nJalan Jalan\n\ndi tempat",
-        align: "left",
-    })
+const editor = useEditor({
+  content: "<p>Resume Is Write Here!</p>",
+  extensions: [TiptapStarterKit, TiptapUnderline, TiptapTextAlign.configure({types: ['heading', 'paragraph']})],
+});
 
-    const kalimatPembuka = reactive({
-        text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec scelerisque sem vel purus efficitur, a aliquet lacus bibendum. Nam eget enim luctus ipsum convallis congue. Vivamus a arcu mauris. Phasellus a mi vel nunc tristique fringilla. Sed nisi felis, ornare a dolor eleifend, commodo finibus ipsum. Quisque tincidunt dui sed metus suscipit ultrices. Ut suscipit condimentum urna sed dignissim. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum mi nunc, dapibus a quam a, venenatis ultrices quam.`,
-        align: "justify",
-    })
+onBeforeUnmount(() => {
+  unref(editor).destroy();
+});
 
-    const biodata = reactive({
-        text: "Nama Lengkap: Kurniawan\nTempat Tanggal Lahir: Nganjuk, 07 Januari 1999\nDomisili: Jakarta Selatan",
-        align: "left",
-    })
-
-    const informasiTambahan = reactive({
-        text: "Aenean porta facilisis nibh, ut malesuada dolor porttitor et. Aenean ultricies ex purus, eget tincidunt ex suscipit finibus. Praesent ornare a felis venenatis maximus. Integer et sem faucibus, porta nisl vitae, porttitor mi. In rhoncus blandit varius. Nullam purus metus, vulputate vitae facilisis id, cursus a enim. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque a blandit ante. Donec egestas, erat ut blandit tempus, diam sapien condimentum orci, at tempor ipsum purus nec neque. Nam condimentum a lectus eu maximus. Vestibulum ac ipsum non mauris auctor malesuada. Duis eget justo imperdiet, convallis turpis ac, convallis eros.",
-        align: "justify",
-    })
-
-    const daftarLampiran = reactive({
-        text: "1. CV\n2. KTP\n3. KK",
-        align: "left",
-    })
-
-    const kalimatPenutup = reactive({
-        text: "In suscipit arcu in mi sagittis accumsan. Donec non eleifend tortor. Donec varius nisl ut bibendum aliquam. Donec bibendum risus et ante consectetur volutpat. Quisque ut luctus enim. Pellentesque a justo ac ligula aliquam condimentum. Nam vulputate vulputate nibh, in fermentum odio consectetur sed. In blandit enim quam, quis suscipit enim tincidunt nec. In venenatis orci eget quam ullamcorper malesuada. Sed viverra molestie lorem. Cras quis elit a lacus hendrerit mollis eget at mi. Proin facilisis, purus eu venenatis varius, mi tortor convallis est, nec condimentum libero elit ut metus. Nam efficitur, sapien eget sollicitudin sodales, dolor eros venenatis lacus, et egestas mi nisl et nunc.",
-        align: "justify",
-    })
-
-    const doc = new jsPDF();
-
-    // Page Size
-    const pageWidth = doc.internal.pageSize.getWidth()
-    const pageHeight = doc.internal.pageSize.getHeight()
-
-    // Margin X Y
-    const margin = 10 // it means 10 * 2 for (x) and 10 * 2 for (y)
-    const marginX = margin * 2;
-    const marginY = margin * 2;
-
-    // define
-    const usablePageWidth = pageWidth - marginX;
-    const usablePageHeigth = pageHeight - margin
-
-    // The Words    
-    // const words = useWords();
-    const fontSz = 14;
-    const lineSpacing = 1.5;
-    const lineHeight = fontSz * lineSpacing - fontSz
-
-    // lineHeight
-    let y = margin;
-    let page = 1;
-        
-    const extractForm = () => {
-        const words = computed(() => {
-            return [tanggalSurat, informasiPenerima, kalimatPembuka, biodata, informasiTambahan, daftarLampiran, kalimatPenutup]
-        })
-        
-        let arr = [] 
-        for (let w = 0; w < words.value.length; w++) {        
-            const obj = words.value[w];
-            const {text, align} = obj;
-            
-            const lines = doc.splitTextToSize(text, usablePageWidth)
-            
-            let stack = []
-            for (let l = 0; l < lines.length; l++) {
-                const line = lines[l];
-
-                if (y > usablePageHeigth) {
-                    y = margin
-                    page += 1
-                    doc.addPage()
-                }
-
-                if (align === 'justify') {
-                    if (lines.length > 1) {
-                        if (l == lines.length - 1) {
-                            if (stack.length !== 0) {
-                                arr.push({line: stack.map(stck => stck.line).join(' '), align: 'justify', y: stack[0].y, page: stack[0].page})
-                                stack = []
-                            }
-                            y -= lineHeight
-                            arr.push({line, align: "left", y, page})
-                        } else {
-                            stack.push({line, align, y, page})
-                        }
-                    } else {
-                        arr.push({line, align, y, page})
-                    }
-                } else {
-                    arr.push({line, align, y, page})
-                }
-
-                y += lineHeight
-            }
-            
-            
-            if (stack.length !== 0) {
-                arr.push({line: stack.map(stck => stck.line).join(' '), align: 'justify', y: stack[0].y, page: stack[0].page})
-            }            
-            
-            arr.push({line: "", align: 'left', y, page})
-            y += lineHeight
-        }
-
-        return arr;
-    }
-
-    const handleView = () => {
-        doc.setFontSize(fontSz)
-
-        const arrText = extractForm()
-        console.table(arrText)
-
-        for (let t = 0; t < arrText.length; t++) {
-            const arr = arrText[t];
-            doc.setPage(arr.page)
-            doc.text(arr.line.trim(), margin, arr.y, {align: arr.align, maxWidth: usablePageWidth})
-        }
-
-        doc.output("pdfobjectnewwindow", {filename: 'Test.pdf'})
-    }
+const toggleBold = () => editor.value.chain().focus().toggleBold().run();
+const toggleItalic = () => editor.value.chain().focus().toggleBold().run();
+const toggleUnderline = () => editor.value.chain().focus().toggleUnderline().run();
+const toggleParagraph = () => editor.value.chain().focus().setParagraph().run();
+const toggleTitle = () => editor.value.chain().focus().toggleHeading({level: 2}).run();
+const toggleBulletList = () => editor.value.chain().focus().toggleBulletList().run();
+const toggleOrderList = () => editor.value.chain().focus().toggleOrderedList().run();
+const toggleLeft = () => editor.value.chain().focus().setTextAlign("left").run();
+const toggleCenter = () => editor.value.chain().focus().setTextAlign("center").run();
+const toggleRight = () => editor.value.chain().focus().setTextAlign("right").run();
+const toggleJustify = () => editor.value.chain().focus().setTextAlign("justify").run();
+const toggleUndo = () => editor.value.chain().focus().undo().run();
+const toggleRedo = () => editor.value.chain().focus().redo().run();
 </script>
 
 <template>
-    <section id="app-letter" class="w-full border">
-        <h3>Application Letter</h3>
-        <form class="flex flex-col p-2 space-y-5">
-            <InputText v-model="tanggalSurat.text" id-name="tanggal-surat"/>
-            <InputTextarea v-model="informasiPenerima.text" id-name="informasi-penerima"/>
-            <InputTextarea v-model="kalimatPembuka.text" id-name="kalimat-pembuka"/>
-            <InputTextarea v-model="biodata.text" id-name="biodata"/>
-            <InputTextarea v-model="informasiTambahan.text" id-name="informasi-tambahan"/>
-            <InputTextarea v-model="daftarLampiran.text" id-name="daftar-lampiran"/>
-            <InputTextarea v-model="kalimatPenutup.text" id-name="kalimat-penutup"/>
+  <div class="border p-2 rounded-xl" id="write">
+    <div v-if="editor" :class="['flex gap-2 mb-3 overflow-x-auto', 
+        '[&_button]:border [&_button]:aspect-square [&_button]:h-7 [&_button]:rounded']">
+      
+        <button @click="toggleBold">
+            <span class="font-extrabold">B</span>
+        </button>
 
-            <div class="grid grid-cols-[1fr_1fr] gap-5">
-                <button type="button" class="border px-2 py-3">Save Document</button>
-                <button type="button" class="border px-2 py-3" @click="handleView">View Document</button>
-            </div>
-        </form>
-    </section>
+        <button @click="toggleItalic">
+            <span class="font-bold italic">i</span>
+        </button>
+
+        <button @click="toggleUnderline">
+            <span class="font-bold underline">U</span>
+        </button>
+
+        <button @click="toggleTitle">
+            <span class="font-bold">H</span>
+        </button>
+
+        <button @click="toggleParagraph">
+            <span class="font-bold">P</span>
+        </button>
+
+        <button @click="toggleBulletList" class="flex items-center justify-center">
+            <Icon name="uil:list-ul" class="size-5"/>
+        </button>
+
+        <button @click="toggleOrderList" class="flex items-center justify-center">
+            <Icon name="uil:list-ol" class="size-5"/>
+        </button>
+
+        <button @click="toggleLeft" class="flex items-center justify-center">
+            <Icon name="uil:align-left" class="size-5"/>
+        </button>
+        <button @click="toggleCenter" class="flex items-center justify-center">
+            <Icon name="uil:align-center" class="size-5"/>
+        </button>
+        <button @click="toggleRight" class="flex items-center justify-center">
+            <Icon name="uil:align-right" class="size-5"/>
+        </button>
+
+        <button @click="toggleJustify" class="flex items-center justify-center">
+            <Icon name="uil:align-justify" class="size-5"/>
+        </button>
+
+        <button @click="toggleUndo" class="flex items-center justify-center">
+            <Icon name="solar:undo-left-round-outline" class="size-5"/>
+        </button>
+
+        <button @click="toggleRedo" class="flex items-center justify-center">
+            <Icon name="solar:undo-left-round-outline" class="size-5 scale-x-[-1]"/>
+        </button>
+
+    </div>
+    <TiptapEditorContent :editor="editor" class="border p-2"/>
+  </div>
 </template>

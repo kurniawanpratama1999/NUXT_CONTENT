@@ -16,6 +16,7 @@
     "better-sqlite3": "^12.2.0",
     "jspdf": "^3.0.1",
     "nuxt": "^4.0.1",
+    "nuxt-tiptap-editor": "^2.3.1",
     "tailwindcss": "^4.1.11",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1"
@@ -23,6 +24,8 @@
   "devDependencies": {
     "@iconify-json/solar": "^1.2.2",
     "@iconify-json/uil": "^1.2.3",
-    "@iconify-json/vscode-icons": "^1.2.23"
+    "@iconify-json/vscode-icons": "^1.2.23",
+    "@tiptap/extension-text-align": "^2.26.1",
+    "@tiptap/extension-underline": "^2.26.1"
   }
 }

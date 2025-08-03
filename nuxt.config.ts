@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/icon', '@nuxt/content'],
+  modules: ['@nuxt/icon', '@nuxt/content', 'nuxt-tiptap-editor'],
   icon: {
     mode: 'css',
     cssLayer: "base",
@@ -41,4 +41,7 @@ export default defineNuxtConfig({
       }
     }
   },
+  tiptap: {
+    prefix: 'Tiptap'
+  }
 })

@@ -68,7 +68,20 @@
     .main-content ul,
     .main-content ol {
         margin-bottom: 16px;
-    } 
+    }
+
+    .main-content ul li p, .main-content ol li p {
+        margin-bottom: 0;
+    }
+
+    .main-content #write p {
+        margin-bottom: 0;
+    }
+
+    .main-content .tiptap {
+        padding: 5px;
+        outline: 0;
+    }
 
     .main-content ol {
         padding-left: 40px;
