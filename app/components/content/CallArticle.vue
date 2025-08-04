@@ -81,6 +81,7 @@
     .main-content .tiptap {
         padding: 5px;
         outline: 0;
+        
     }
 
     .main-content ol {
