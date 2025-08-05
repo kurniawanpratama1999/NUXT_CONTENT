@@ -36,17 +36,17 @@ const kotaDanTanggalSurat = reactive({
 });
 
 const namaPenerima = reactive({
-  text: "Rizky Wijaya",
+  text: "Kapten Monkey D. Luffy",
   align: "left",
 });
 
 const namaPerusahaan = reactive({
-  text: "PT Maju Mundur Kena",
+  text: "Kapal Bajak Laut Mugiwara",
   align: "left",
 });
 
 const alamatPerusahaan = reactive({
-  text: "Jalan Dukuh Raya, Kebayoran Lama, Kebayoran Lama Utara, Jakarta Selatan",
+  text: "Jalan Anime One Piece, Volume 50, Episode 2004",
   align: "left",
 });
 
@@ -56,7 +56,7 @@ const salamPembuka = reactive({
 });
 
 const biodata = reactive({
-  text: "Nama:Saya\nTanggal Lahir:Kota, dd-mm-yyyy atau dd mmmm yyyy\nLulusan:SMKN 59 Jakarta\nJurusan:Nama Jurusan",
+  text: "Nama:Roronoa Zoro\nTanggal Lahir:Jawa, 07 Desember 1990\nLulusan:SMKN 59 Jakarta\nJurusan:Pendekar Pedang",
   align: "justify",
 });
 
@@ -71,12 +71,12 @@ const berkasLampiran = reactive({
 });
 
 const salamPenutup = reactive({
-  text: "Demikian surat lamaran ini saya buat dengan sebenar-benarnya. Besar harapan saya agar bisa diberikan kesempatan untuk bekerja di perusahaan yang Bapak/Ibu pimpin. Atas perhatiannya dan kerjasamanya saya ucapkan terima kasih.",
+  text: "Demikian surat lamaran ini saya buat dengan sebenar-benarnya. Besar harapan saya agar bisa diberikan kesempatan untuk bekerja di Kapal yang kapten pimpin. Atas perhatiannya dan kerjasamanya saya ucapkan terima kasih.",
   align: "justify",
 });
 
 const namaPengirim = reactive({
-  text: "Kurniawan Pratama",
+  text: "Roronoa Zoro",
   align: "right",
 });
 
@@ -97,7 +97,7 @@ const send = computed(() => {
 
 const pdfUrl = ref("");
 
-async function handlePreview() {
+const generate = async () => {
   const fetching = await fetch("/api/pdfkit", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -107,76 +107,83 @@ async function handlePreview() {
   const blob = await fetching.blob();
   const url = URL.createObjectURL(blob);
   pdfUrl.value = url;
+};
+
+async function handlePreview() {
+  await generate();
+  if (pdfUrl.value) {
+    window.open(pdfUrl.value, "_blank");
+  }
 }
-function handleDownload() {}
+
+async function handleDownload() {
+  await generate();
+  const link = document.createElement("a");
+  link.href = pdfUrl.value;
+  link.download = "Surat_Lamaran_Kerja_" + namaPengirim.text + ".pdf";
+  link.click();
+}
 
 function handleBack() {
   pdfUrl.value = "";
 }
 </script>
 <template lang="html">
-  <div
-    v-if="pdfUrl"
-    class="overflow-x-auto max-w-[700px] mx-auto p-2 bg-[rgba(255,255,255,.3)] rounded"
-  >
-    <div class="flex justify-between py-3 px-2">
-      <button
-        @click="handleBack"
-        class="py-2 border rounded basis-[100px] bg-blue-300"
-      >
-        Back
-      </button>
-      <h4>PREVIEW PDF</h4>
-      <button class="py-2 border rounded basis-[100px] bg-red-300">
-        Download
-      </button>
-    </div>
-    <iframe
-      :src="pdfUrl"
-      frameborder="10"
-      width="673"
-      height="950"
-      class="mx-auto rounded"
-    />
-  </div>
   <form
-    v-if="!pdfUrl"
     class="space-y-5 max-w-[580px] mx-auto p-2 bg-[rgba(255,255,255,.3)] rounded"
   >
     <h4 class="text-center">Form Surat Lamaran Kerja</h4>
     <InputText
+      v-model="kotaDanTanggalSurat.text"
       id-name="kota-dan-tanggal-surat"
       :holder="`East Blue, ${new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(Date.now())}`"
     />
-    <InputText id-name="nama-penerima" holder="Bapak Kapten Monkey D. Lufy" />
-    <InputText id-name="nama-perusahaan" holder="Kapal Bajak Laut Mugiwara" />
-    <InputText id-name="alamat-perusahaan" holder="Jalan Anime One Piece" />
+    <InputText
+      v-model="namaPenerima.text"
+      id-name="nama-penerima"
+      holder="Bapak Kapten Monkey D. Lufy"
+    />
+    <InputText
+      v-model="namaPerusahaan.text"
+      id-name="nama-perusahaan"
+      holder="Kapal Bajak Laut Mugiwara"
+    />
+    <InputText
+      v-model="alamatPerusahaan.text"
+      id-name="alamat-perusahaan"
+      holder="Jalan Anime One Piece"
+    />
     <InputTextarea
+      v-model="salamPembuka.text"
       id-name="salam-pembuka"
       c-input="min-h-30"
       holder="Berdasarkan informasi yang saya peroleh dari King Usop, bahwasannya Kapal Bajak Laut Mugiwara sedang membutuhkan Wakil Kapten yang ahli dalam berpedang, berikut adalah data diri saya:"
     />
     <InputTextarea
+      v-model="biodata.text"
       id-name="biodata"
       c-input="min-h-40"
       :holder="`Nama:Saya\nTanggal Lahir:Kota, dd-mm-yyyy atau dd mmmm yyyy\nLulusan:SMKN 59 Jakarta\nJurusan:Nama Jurusan\ndan lain-lain ...`"
     />
     <InputTextarea
+      v-model="isiSurat.text"
       id-name="isi-surat"
       c-input="min-h-40"
       holder="Dengan berbekal keahlian menggunakan 3 pedang sekaligus, saya memiliki jurus ampuh yang setara dengan jabatan kapten, selain itu pengalaman saya di dojo dan latihan fisik yang rutin membuat saya tidak perlu lagi memakan devil fruit, sehingga saya mampu berenang di laut dengan mudah"
     />
     <InputTextarea
+      v-model="berkasLampiran.text"
       id-name="berkas-lampiran"
       c-input="min-h-50"
       :holder="`CV\nSurat Lamaran\nFC KTP\nFC KK\nFC SKCK\nFC Transkip Nilai\nFC Ijazah Terakhir\nPas Foto 4x6 Background Merah @ 2 Lembar\ndan lain-lain ...`"
     />
     <InputTextarea
+      v-model="salamPenutup.text"
       id-name="salam penutup"
       c-input="min-h-40"
       holder="Demikian surat lamaran ini saya buat dengan sebenar-benarnya. Besar harapan saya agar bisa diberikan kesempatan untuk bekerja di Kapal Bajak Laut Mugiwara Kapten Luffy pimpin. Atas perhatiannya dan kerjasamanya saya ucapkan terima kasih."
     />
-    <InputText id-name="nama-pengirim" />
+    <InputText id-name="nama-pengirim" v-model="namaPengirim.text" />
     <div class="flex justify-center gap-3">
       <button
         @click="handlePreview"
@@ -188,7 +195,7 @@ function handleBack() {
       <button
         @click="handleDownload"
         type="button"
-        class="bg-red-400 text-red-100 py-2 px-5 rounded font-bold basis-full"
+        class="bg-red-400 text-emerald-100 py-2 px-5 rounded font-bold basis-full"
       >
         Download PDF
       </button>

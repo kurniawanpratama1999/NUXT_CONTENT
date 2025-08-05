@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
   const doc = new PDFDocument({
     size: "A4",
     margins: { top: 50, bottom: 30, left: 30, right: 30 },
+    layout: "portrait",
   });
   const chunks = [];
 
@@ -68,7 +69,7 @@ export default defineEventHandler(async (event) => {
 
   const modifyBerkasLampiran = line8.text
     .split(/[\n;]/)
-    .map((v, i) => `${i + 1}. ${v}`);
+    .map((v, i) => `- ${v}`);
 
   let countLampiran = modifyBerkasLampiran.length;
   const isGenap = countLampiran % 2 == 0;
@@ -82,11 +83,11 @@ export default defineEventHandler(async (event) => {
   doc.text(modifyBerkasLampiran.join("\n"), 60, doc.y, {
     columns: 2,
     columnGap: 20,
-    height: 25 * countLampiran,
+    height: 30 * countLampiran,
   });
   doc.moveDown(0.2);
 
-  doc.text(line9.text, 30, doc.y, { align: line9.align, indent: 40 });
+  doc.text(line9.text, 30, doc.y + 20, { align: line9.align, indent: 40 });
   doc.moveDown(2);
 
   doc.text(`Hormat saya,\n${line10.text}`, 30, doc.y, { align: line10.align });
