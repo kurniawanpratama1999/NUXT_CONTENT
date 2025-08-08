@@ -1,6 +1,6 @@
 <script setup>
 definePageMeta({
-  layout: "project",
+  layout: 'project',
 });
 
 const project = await useProject();

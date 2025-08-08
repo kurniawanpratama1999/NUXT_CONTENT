@@ -1,29 +1,30 @@
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from '@tailwindcss/vite';
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2025-07-15",
+  compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ["@nuxt/icon", "@nuxt/content"],
-  imports: {
-    dirs: ["models"],
+  modules: ['@nuxt/icon', '@nuxt/content'],
+  app: {
+    pageTransition: { name: 'fade', mode: 'out-in' },
+    // layoutTransition: { name: 'layout', mode: 'out-in' },
   },
+  css: ['~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
   },
   icon: {
-    mode: "css",
-    cssLayer: "base",
+    mode: 'css',
+    cssLayer: 'base',
     clientBundle: {
       scan: true,
       sizeLimitKb: 256,
       includeCustomCollections: true,
     },
     serverBundle: {
-      collections: ["uil", "vscode-icons", "solar"],
+      collections: ['uil', 'vscode-icons', 'solar'],
     },
   },
-  css: ["~/assets/css/main.css"],
   content: {
     renderer: {
       anchorLinks: {
@@ -34,7 +35,7 @@ export default defineNuxtConfig({
     build: {
       markdown: {
         highlight: {
-          theme: "github-dark",
+          theme: 'github-dark',
         },
       },
     },

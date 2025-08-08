@@ -1,176 +1,195 @@
 <script setup>
-    const priority = ref({
-        '+': 1,
-        '-': 1,
-        '/': 2,
-        '*': 2,
-    })
+const priority = ref({
+  '+': 1,
+  '-': 1,
+  '/': 2,
+  '*': 2,
+});
 
-    const inputs = reactive({
-        result: '0',
-        token: '',
-        check:'',
-    })
-    
-    const onKeyDown = (e) => {
-        const allowed1 = '1234567890.+-*/'
-        const allowed2 = ["Backspace", "Shift"]
-        if (allowed1.includes(e.key) || allowed2.includes(e.key)) {
-            return
-        }
+const inputs = reactive({
+  result: '0',
+  token: '',
+  check: '',
+});
 
-        e.preventDefault()
-    };
+const onKeyDown = (e) => {
+  const allowed1 = '1234567890.+-*/';
+  const allowed2 = ['Backspace', 'Shift'];
+  if (allowed1.includes(e.key) || allowed2.includes(e.key)) {
+    return;
+  }
 
-    const onInput = (e) => {
-        e.target.value = e.target.value.replace(/[^0-9.+\-*/()]/g, '')
-        inputs.token = e.target.value
+  e.preventDefault();
+};
+
+const onInput = (e) => {
+  e.target.value = e.target.value.replace(/[^0-9.+\-*/()]/g, '');
+  inputs.token = e.target.value;
+};
+
+const setTokenize = () => {
+  const { token } = inputs;
+  const stack = [];
+  let joinNumber = '';
+
+  if (!token) return 0;
+
+  for (let i = 0; i < token.length; i++) {
+    const char = token[i];
+
+    if (char === ' ') continue;
+
+    const isNumber = '1234567890'.includes(char);
+    const isOperator = '+-*/()'.includes(char);
+
+    if (isNumber || char === '.') {
+      joinNumber += char;
+    } else if (isOperator) {
+      if (joinNumber) {
+        stack.push(Number(joinNumber));
+        joinNumber = '';
+      }
+
+      stack.push(char);
+    }
+  }
+
+  if (joinNumber) {
+    stack.push(Number(joinNumber));
+  }
+
+  return stack;
+};
+
+const setPostfix = () => {
+  const tokens = setTokenize();
+  const operators = [];
+  const outputs = [];
+
+  const isOperator = (token) => '+-/*'.includes(token);
+  const isNumber = (token) => typeof token == 'number';
+
+  if (tokens.length === 0) return 0;
+
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+
+    if (isNumber(token)) outputs.push(token);
+
+    if (isOperator(token)) {
+      while (
+        operators.length !== 0 &&
+        '+-*/'.includes(operators[operators.length - 1]) &&
+        priority.value[operators[operators.length - 1]] >= priority.value[token]
+      ) {
+        outputs.push(operators.pop());
+      }
+      operators.push(token);
     }
 
-    const setTokenize = () => {
-        const {token} = inputs
-        const stack = []
-        let joinNumber = ''
+    if (token == '(') operators.push(token);
 
-        if (!token) return 0
+    if (token == ')') {
+      while (operators.length !== 0 && operators[operators.length - 1] !== '(') {
+        outputs.push(operators.pop());
+      }
 
-        for (let i = 0; i < token.length; i++) {
-            const char = token[i];
+      operators.pop();
+    }
+  }
 
-            if (char === " ") continue;
+  while (operators.length !== 0) {
+    outputs.push(operators.pop());
+  }
 
-            const isNumber = '1234567890'.includes(char)
-            const isOperator = "+-*/()".includes(char)
+  return outputs;
+};
 
-            if (isNumber || char === '.') {
-                joinNumber += char
-            } else if (isOperator) {
-                if (joinNumber) {
-                    stack.push(Number(joinNumber))
-                    joinNumber = ''
-                }
-                
-                stack.push(char)
-            }
+inputs.result = computed(() => {
+  const postfix = setPostfix();
+  const stack = [];
 
-        }
-        
-        if (joinNumber) {
-            stack.push(Number(joinNumber))
-        }
+  const que = [];
 
-        return stack
+  for (let i = 0; i < postfix.length; i++) {
+    const token = postfix[i];
+
+    if (typeof token === 'number') {
+      stack.push(token);
+    } else {
+      const b = stack.pop();
+      const a = stack.pop();
+
+      switch (token) {
+        case '+':
+          stack.push(a + b);
+          break;
+        case '-':
+          stack.push(a - b);
+          break;
+        case '*':
+          stack.push(a * b);
+          break;
+        case '/':
+          stack.push(a / b);
+          break;
+      }
     }
 
-    const setPostfix = () => {
-        const tokens = setTokenize()
-        const operators = [];
-        const outputs = [];
-
-        const isOperator = (token) => "+-/*".includes(token);
-        const isNumber = (token) => typeof token == 'number';
-
-        if (tokens.length === 0) return 0;
-
-        for (let i = 0; i < tokens.length; i++) {
-            const token = tokens[i];
-
-            if (isNumber(token)) outputs.push(token);
-            
-            if (isOperator(token)) {
-                while (operators.length !== 0
-                && "+-*/".includes(operators[operators.length - 1])
-                && priority.value[operators[operators.length - 1]] >= priority.value[token]) {
-                    outputs.push(operators.pop());
-                }
-                operators.push(token)
-            }
-
-            if (token == "(" ) operators.push(token)
-
-            if (token == ")") {
-                while(operators.length !== 0 && operators[operators.length - 1] !== "(" ) {
-                    outputs.push(operators.pop());
-                }
-
-                operators.pop()
-            }
-        }
-
-        while(operators.length !== 0) {
-            outputs.push(operators.pop());
-        }
-
-
-        return outputs
+    que.push(stack[0]);
+    if (que.length > 2) {
+      que.shift();
     }
+  }
 
-    inputs.result = computed(() => {
-        const postfix = setPostfix();
-        const stack = [];
+  if (que.length < 2) return stack[0];
 
-        const que = [];
-        
-        for (let i = 0; i < postfix.length; i++) {
-            const token = postfix[i];
+  if (isNaN(que[1])) return que[0];
 
-            if (typeof token === 'number'){
-                stack.push(token)
-            } else {
-                const b = stack.pop()
-                const a = stack.pop()
-
-                switch (token) {
-                    case "+": stack.push(a + b); break;
-                    case "-": stack.push(a - b); break;
-                    case "*": stack.push(a * b); break;
-                    case "/": stack.push(a / b); break;
-                }
-            }
-
-            que.push(stack[0])
-            if (que.length > 2) {
-                que.shift()
-            }
-        }
-
-        if (que.length < 2) return stack[0];
-
-        if (isNaN(que[1])) return que[0]
-
-        return stack[0]
-    })
+  return stack[0];
+});
 </script>
 <template>
-    <section id='project' class="w-fit mx-auto">
-        <table class="w-fit">
-            <thead>
-                <tr>
-                    <th>Jenis</th>
-                    <th>Operasi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Infix</td>
-                    <td><input type='text' @keydown="onKeyDown" @input="onInput" v-model="inputs.token" name='token' id='token' class="outline-0" placeholder='Masukan Operasi'></td>
-                </tr>
-                <tr>
-                    <td>Postfix</td>
-                    <td>{{ setPostfix().join(" ") }}</td>
-                </tr>
-                <tr>
-                    <td>Result</td>
-                    <td>{{ inputs.result }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+  <section id="project" class="w-fit mx-auto">
+    <table class="w-fit">
+      <thead>
+        <tr>
+          <th>Jenis</th>
+          <th>Operasi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Infix</td>
+          <td>
+            <input
+              type="text"
+              @keydown="onKeyDown"
+              @input="onInput"
+              v-model="inputs.token"
+              name="token"
+              id="token"
+              class="outline-0"
+              placeholder="Masukan Operasi" />
+          </td>
+        </tr>
+        <tr>
+          <td>Postfix</td>
+          <td>{{ setPostfix().join(' ') }}</td>
+        </tr>
+        <tr>
+          <td>Result</td>
+          <td>{{ inputs.result }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 </template>
 
 <style scoped>
-    td, th {
-        border: 1px solid black;
-        padding: 10px;
-    }
+td,
+th {
+  border: 1px solid black;
+  padding: 10px;
+}
 </style>
