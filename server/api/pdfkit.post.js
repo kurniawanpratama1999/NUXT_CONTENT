@@ -138,6 +138,8 @@ export default defineEventHandler(async (event) => {
     align: line10.align,
   });
 
+  doc.fontSize(8).text(body.currentUrl, 10, 10);
+
   doc.end();
 
   await new Promise((resolve) => doc.on('end', resolve));

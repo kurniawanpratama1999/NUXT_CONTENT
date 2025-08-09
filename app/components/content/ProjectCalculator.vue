@@ -1,20 +1,31 @@
-<script setup>
-const priority = ref({
+<script lang="ts" setup>
+interface PriorityType {
+  '+': number;
+  '-': number;
+  '/': number;
+  '*': number;
+}
+const priority: PriorityType = {
   '+': 1,
   '-': 1,
   '/': 2,
   '*': 2,
-});
+};
 
-const inputs = reactive({
+interface InputsType {
+  result: string;
+  token: string;
+  check: string;
+}
+const inputs = reactive<InputsType>({
   result: '0',
   token: '',
   check: '',
 });
 
-const onKeyDown = (e) => {
-  const allowed1 = '1234567890.+-*/';
-  const allowed2 = ['Backspace', 'Shift'];
+const onKeyDown = (e: any): void => {
+  const allowed1: string = '1234567890.+-*/';
+  const allowed2: string[] = ['Backspace', 'Shift'];
   if (allowed1.includes(e.key) || allowed2.includes(e.key)) {
     return;
   }
@@ -22,25 +33,28 @@ const onKeyDown = (e) => {
   e.preventDefault();
 };
 
-const onInput = (e) => {
-  e.target.value = e.target.value.replace(/[^0-9.+\-*/()]/g, '');
-  inputs.token = e.target.value;
+const onInput = (e: any) => {
+  e.target.value = e.target.value.replace(/[^0-9.+\-*/()]/g, '') as string;
+  inputs.token = e.target.value as string;
 };
 
-const setTokenize = () => {
-  const { token } = inputs;
-  const stack = [];
-  let joinNumber = '';
+type TokenType = Array<number | string>;
 
-  if (!token) return 0;
+const setTokenize = (): TokenType => {
+  const { token }: { token: string } = inputs;
+  const stack: TokenType = [];
+
+  let joinNumber: string = '';
+
+  if (token === undefined) return [0];
 
   for (let i = 0; i < token.length; i++) {
-    const char = token[i];
+    const char: string = String(token[i]);
 
     if (char === ' ') continue;
 
-    const isNumber = '1234567890'.includes(char);
-    const isOperator = '+-*/()'.includes(char);
+    const isNumber: boolean = '1234567890'.includes(char);
+    const isOperator: boolean = '+-*/()'.includes(char);
 
     if (isNumber || char === '.') {
       joinNumber += char;
@@ -61,28 +75,26 @@ const setTokenize = () => {
   return stack;
 };
 
-const setPostfix = () => {
-  const tokens = setTokenize();
-  const operators = [];
-  const outputs = [];
+const setPostfix = (): TokenType => {
+  const tokens: TokenType = setTokenize();
+  const operators: string[] = [];
+  const outputs: TokenType = [];
 
-  const isOperator = (token) => '+-/*'.includes(token);
-  const isNumber = (token) => typeof token == 'number';
-
-  if (tokens.length === 0) return 0;
+  if (tokens.length === 0) return [0];
 
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
 
-    if (isNumber(token)) outputs.push(token);
+    if (typeof token === 'number') outputs.push(token);
 
-    if (isOperator(token)) {
+    if (typeof token === 'string') {
+      const lastOperators: string = operators[operators.length - 1] as keyof PriorityType;
       while (
         operators.length !== 0 &&
-        '+-*/'.includes(operators[operators.length - 1]) &&
-        priority.value[operators[operators.length - 1]] >= priority.value[token]
+        '+-*/'.includes(lastOperators) &&
+        priority[lastOperators as keyof PriorityType] >= priority[token as keyof PriorityType]
       ) {
-        outputs.push(operators.pop());
+        outputs.push(operators.pop() as number | string);
       }
       operators.push(token);
     }
@@ -91,7 +103,7 @@ const setPostfix = () => {
 
     if (token == ')') {
       while (operators.length !== 0 && operators[operators.length - 1] !== '(') {
-        outputs.push(operators.pop());
+        outputs.push(operators.pop() as number | string);
       }
 
       operators.pop();
@@ -99,17 +111,17 @@ const setPostfix = () => {
   }
 
   while (operators.length !== 0) {
-    outputs.push(operators.pop());
+    outputs.push(operators.pop() as number | string);
   }
 
   return outputs;
 };
 
-inputs.result = computed(() => {
+const result = computed(() => {
   const postfix = setPostfix();
-  const stack = [];
+  const stack: TokenType = [];
 
-  const que = [];
+  const que: TokenType = [];
 
   for (let i = 0; i < postfix.length; i++) {
     const token = postfix[i];
@@ -117,8 +129,8 @@ inputs.result = computed(() => {
     if (typeof token === 'number') {
       stack.push(token);
     } else {
-      const b = stack.pop();
-      const a = stack.pop();
+      const b: number = stack.pop() as number;
+      const a: number = stack.pop() as number;
 
       switch (token) {
         case '+':
@@ -136,7 +148,8 @@ inputs.result = computed(() => {
       }
     }
 
-    que.push(stack[0]);
+    que.push(stack[0] as number);
+
     if (que.length > 2) {
       que.shift();
     }
@@ -144,7 +157,7 @@ inputs.result = computed(() => {
 
   if (que.length < 2) return stack[0];
 
-  if (isNaN(que[1])) return que[0];
+  if (isNaN(que[1] as number)) return que[0];
 
   return stack[0];
 });
@@ -179,7 +192,7 @@ inputs.result = computed(() => {
         </tr>
         <tr>
           <td>Result</td>
-          <td>{{ inputs.result }}</td>
+          <td>{{ result }}</td>
         </tr>
       </tbody>
     </table>

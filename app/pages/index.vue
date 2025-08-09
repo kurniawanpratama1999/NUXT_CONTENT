@@ -95,6 +95,7 @@ const icons = [
     <div class="flex font-bold items-center gap-2 text-xl">
       <Icon name="uil:0-plus" class="size-8" />
       <h2 class="">Baca blog</h2>
+      <span class="text-xs text-amber-500 underline">Coming Soon</span>
     </div>
     <p>
       "Ini mungkin sedikit aneh dan kurang penting, karna gua tidak terbiasa menulis panjang — tapi inilah gua, buat

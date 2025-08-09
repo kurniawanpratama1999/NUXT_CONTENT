@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   modules: ['@nuxt/icon', '@nuxt/content'],
   app: {
     pageTransition: { name: 'fade', mode: 'out-in' },
-    // layoutTransition: { name: 'layout', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
   },
   css: ['~/assets/css/main.css'],
   vite: {
